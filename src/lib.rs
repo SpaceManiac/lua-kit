@@ -2,10 +2,12 @@
 
 extern crate byteorder;
 
-use std::io::{self, Read, Write};
+use std::io::{self, Write};
 use std::mem::size_of;
-use byteorder::{ReadBytesExt, WriteBytesExt};
+use byteorder::WriteBytesExt;
 use byteorder::NativeEndian as E;
+
+pub mod bytecode;
 
 pub const SIGNATURE: &'static [u8] = b"\x1bLua";
 pub const VERSION: u8 = 53;
