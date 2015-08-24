@@ -10,7 +10,7 @@ use byteorder::NativeEndian as E;
 pub mod bytecode;
 
 pub const SIGNATURE: &'static [u8] = b"\x1bLua";
-pub const VERSION: u8 = 53;
+pub const VERSION: u8 = 0x53;
 pub const FORMAT: u8 = 0;
 pub const DATA: &'static [u8] = b"\x19\x93\r\n\x1a\n";
 pub const TEST_INT: Integer = 0x5678;
@@ -46,6 +46,16 @@ pub struct Debug {
 	pub lineinfo: Vec<Int>,
 	pub localvars: Vec<LocalVar>,
 	pub upvalues: Vec<String>,
+}
+
+impl Debug {
+	pub fn none() -> Debug {
+		Debug {
+			lineinfo: vec![],
+			localvars: vec![],
+			upvalues: vec![],
+		}
+	}
 }
 
 pub struct Function {
@@ -84,6 +94,8 @@ impl<W: Write> Writer<W> {
 		try!(self.out.write_u8(size_of::<Instruction>() as u8));
 		try!(self.out.write_u8(size_of::<Integer>() as u8));
 		try!(self.out.write_u8(size_of::<Number>() as u8));
+		try!(self.out.write_i64::<E>(TEST_INT));
+		try!(self.out.write_f64::<E>(TEST_NUMBER));
 		Ok(())
 	}
 
@@ -157,7 +169,7 @@ impl<W: Write> Writer<W> {
 				try!(self.out.write_u8(0xff));
 				try!(self.out.write_u32::<E>(string.len() as u32));
 			} else {
-				try!(self.out.write_u8(string.len() as u8));
+				try!(self.out.write_u8(string.len() as u8 + 1));
 			}
 			try!(self.out.write_all(string.as_bytes()))
 		}

@@ -1,5 +1,8 @@
 //! Bytecode construction.
 
+const BITRK: u32 = 1 << 8;
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum RK {
 	R(u8),
 	K(u8),
@@ -7,17 +10,22 @@ pub enum RK {
 
 impl RK {
 	pub fn from(value: u32) -> RK {
-		const BITRK: u32 = 1 << 8;
 		if value & BITRK != 0 {
 			RK::K((value & !BITRK) as u8)
 		} else {
 			RK::R(value as u8)
 		}
 	}
+	pub fn val(&self) -> u32 {
+		match self {
+			&RK::R(r) => r as u32,
+			&RK::K(k) => (k as u32) | BITRK,
+		}
+	}
 }
 
 pub fn encode(op: Opcode, a: u8, b: u32, c: u32) -> u32 {
-	(op as u32) | ((a as u32) << 6) | ((b & 0x1ff) << 14) | ((c & 0x1ff) << 23)
+	(op as u32) | ((a as u32) << 6) | ((c & 0x1ff) << 14) | ((b & 0x1ff) << 23)
 }
 
 pub fn encode_bx(op: Opcode, a: u8, bx: u32) -> u32 {
@@ -40,9 +48,10 @@ pub fn encode_ax(op: Opcode, ax: u32) -> u32 {
 
 // All 'skips' (pc++) assume that next instruction is a jump.
 #[repr(u8)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Opcode { // Args   Action
 	Move,     // A B    R(A) := R(B)
-	LoadK,    // A Bx   R(A) := Kst(B)
+	LoadK,    // A Bx   R(A) := Kst(Bx)
 	LoadKX,   // A      R(A) := Kst(extra arg)
 	// ^- the next 'instruction' is always EXTRAARG.
 	LoadBool, // A B C  R(A) := (Bool)B; if (C) pc++
