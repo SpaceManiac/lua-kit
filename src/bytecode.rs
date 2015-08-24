@@ -13,7 +13,7 @@ pub enum RK {
 
 impl RK {
 	/// Convert a number to an `RK`.
-	pub fn from(value: u32) -> RK {
+	pub fn decode(value: u32) -> RK {
 		if value & BITRK != 0 {
 			RK::K((value & !BITRK) as u8)
 		} else {
@@ -21,7 +21,7 @@ impl RK {
 		}
 	}
 	/// Convert this `RK` to a number.
-	pub fn val(&self) -> u32 {
+	pub fn encode(&self) -> u32 {
 		match self {
 			&RK::R(r) => r as u32,
 			&RK::K(k) => (k as u32) | BITRK,
