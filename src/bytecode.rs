@@ -1,14 +1,18 @@
-//! Bytecode construction.
+//! Tools for bytecode generation.
 
 const BITRK: u32 = 1 << 8;
 
+/// A slot which is either a register (`R`) or constant (`K`).
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum RK {
+	/// A register index.
 	R(u8),
+	/// A constant table index.
 	K(u8),
 }
 
 impl RK {
+	/// Convert a number to an `RK`.
 	pub fn from(value: u32) -> RK {
 		if value & BITRK != 0 {
 			RK::K((value & !BITRK) as u8)
@@ -16,6 +20,7 @@ impl RK {
 			RK::R(value as u8)
 		}
 	}
+	/// Convert this `RK` to a number.
 	pub fn val(&self) -> u32 {
 		match self {
 			&RK::R(r) => r as u32,
@@ -24,18 +29,22 @@ impl RK {
 	}
 }
 
+/// Encode an instruction with `A`, `B`, and `C` parameters.
 pub fn encode(op: Opcode, a: u8, b: u32, c: u32) -> u32 {
 	(op as u32) | ((a as u32) << 6) | ((c & 0x1ff) << 14) | ((b & 0x1ff) << 23)
 }
 
+/// Encode an instruction with `A` and `Bx` parameters.
 pub fn encode_bx(op: Opcode, a: u8, bx: u32) -> u32 {
 	(op as u32) | ((a as u32) << 6) | ((bx & 0x3ffff) << 14)
 }
 
+/// Encode an instruction with `A` and `sBx` parameters.
 pub fn encode_sbx(op: Opcode, a: u8, sbx: i32) -> u32 {
 	(op as u32) | ((a as u32) << 6) | ((((sbx + 0x20000) as u32) & 0x3ffff) << 14)
 }
 
+/// Encode an instruction with an `Ax` parameter.
 pub fn encode_ax(op: Opcode, ax: u32) -> u32 {
 	(op as u32) | ((ax & 0x3ffffff) << 6)
 }
@@ -45,8 +54,9 @@ pub fn encode_ax(op: Opcode, ax: u32) -> u32 {
 // |opcode|   A    |    C    |    B    |
 // |opcode|   A    |     Bx or sBx     |
 // |opcode|             Ax             |
-
 // All 'skips' (pc++) assume that next instruction is a jump.
+
+/// A Lua opcode.
 #[repr(u8)]
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
 pub enum Opcode { // Args   Action
