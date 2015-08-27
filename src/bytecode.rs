@@ -67,7 +67,7 @@ pub enum Opcode { // Args   Action
 	LoadBool, // A B C  R(A) := (Bool)B; if (C) pc++
 	LoadNil,  // A B    R(A), R(A+1), ..., R(A+B) := nil
 
-	GetUpval, // A B C  R(A) := UpValue[B]
+	GetUpval, // A B    R(A) := UpValue[B]
 	GetTabUp, // A B C  R(A) := UpValue[B][RK(C)]
 	GetTable, // A B C  R(A) := R(B)[RK(C)]
 

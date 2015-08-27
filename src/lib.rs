@@ -55,9 +55,9 @@ pub enum Constant {
 /// An entry in the upvalue table.
 #[derive(Clone, Copy, Debug, PartialEq)]
 pub enum Upvalue {
-	/// An upvalue in the outer function's list.
+	/// An upvalue inherited from the outer function's upvalues.
 	Outer(u8),
-	/// An upvalue on the stack (register).
+	/// An upvalue in the outer function's registers.
 	Stack(u8),
 }
 

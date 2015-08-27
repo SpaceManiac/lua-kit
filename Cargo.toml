@@ -3,6 +3,13 @@ name = "lua-kit"
 version = "0.1.0"
 authors = ["Tad Hardesty <tad@platymuus.com>"]
 
+description = "Toolkit for working with Lua bytecode"
+readme = "README.md"
+license = "MIT"
+keywords = ["lua", "lua53", "bytecode"]
+
+repository = "https://github.com/SpaceManiac/lua-kit"
+
 [dependencies]
 byteorder = "0.3"
 libc = "0.1"
