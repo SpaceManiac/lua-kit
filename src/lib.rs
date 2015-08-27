@@ -3,6 +3,7 @@
 //! Synced to Lua 5.3.
 
 extern crate byteorder;
+extern crate libc;
 
 pub mod bytecode;
 mod write;
@@ -25,9 +26,9 @@ pub const TEST_INT: Integer = 0x5678;
 pub const TEST_NUMBER: Number = 370.5;
 
 /// The bytecode's C `int` type.
-pub type Int = i32;
+pub type Int = libc::c_int;
 /// The bytecodes' C `size_t` type.
-pub type Size = u32;
+pub type Size = libc::size_t;
 /// The bytecode's `Instruction` type.
 pub type Instruction = u32;
 /// The bytecode's `Integer` type.
