@@ -104,17 +104,12 @@ impl<W: Write> Writer<W> {
 	}
 
 	fn write_string(&mut self, string: &str) -> io::Result<()> {
-		if string.len() == 0 {
-			try!(self.out.write_u8(0))
+		if string.len() >= 0xff {
+			try!(self.out.write_u8(0xff));
+			try!(self.out.write_u32::<E>(string.len() as u32 + 1));
 		} else {
-			if string.len() >= 0xff {
-				try!(self.out.write_u8(0xff));
-				try!(self.out.write_u32::<E>(string.len() as u32 + 1));
-			} else {
-				try!(self.out.write_u8(string.len() as u8 + 1));
-			}
-			try!(self.out.write_all(string.as_bytes()))
+			try!(self.out.write_u8(string.len() as u8 + 1));
 		}
-		Ok(())
+		self.out.write_all(string.as_bytes())
 	}
 }
